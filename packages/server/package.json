@@ -1,0 +1,32 @@
+{
+  "name": "@api_graphql/server",
+  "version": "1.0.0",
+  "description": "Node and GraphQL",
+  "main": "src/main.js",
+  "author": "Rodrigo M. S.",
+  "license": "ISC",
+  "private": true,
+  "scripts": {
+    "start": "nodemon -r esm ."
+  },
+  "devDependencies": {
+    "esm": "^3.2.25",
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "apollo-server-core": "^3.10.2",
+    "apollo-server-express": "^3.10.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "graphql": "^16.6.0",
+    "mysql2": "^2.3.3",
+    "run": "^1.4.0",
+    "start": "^5.1.0",
+    "uuid": "^9.0.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "src/data/*"
+    ]
+  }
+}
