@@ -1026,5 +1026,11 @@ SELECT id, name, email, disabled FROM APP_DEMANDS.client;
 /* Ordena e retorna os 20 primeiros clientes. */
 SELECT id, name, email, disabled FROM APP_DEMANDS.client ORDER BY name ASC LIMIT 0, 20;
 
-/* Ordena e retorna os 20 priemiros clientes em formato JSON. */
+/* Ordena e retorna os 20 primeiros clientes em formato JSON. */
 SELECT JSON_ARRAYAGG(JSON_OBJECT(id, name, email, disabled)) FROM APP_DEMANDS.client ORDER BY name ASC LIMIT 0, 20;
+
+/**/
+SELECT JSON_ARRAYAGG(JSON_OBJECT(id, name, email, disabled)) OVER w JSON FROM APP_DEMANDS.client WINDOW w AS (ORDER BY name ASC) LIMIT 0, 20;
+
+/* Retorna a quantidade de clientes cadastrados. */
+SELECT COUNT(*) AS `totalItems` FROM APP_DEMANDS.client;

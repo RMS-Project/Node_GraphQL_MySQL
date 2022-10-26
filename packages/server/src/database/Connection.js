@@ -1,60 +1,54 @@
-// Inclusão dos pacotes.
+// Inclusão do pacote.
 //import { createConnection } from 'mysql2/promise'
 
-// Configuração da conexão com o banco de dados.
-/*var connection = createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'root',
-  database : 'APP_DEMANDS'
-})*/
+// Promise - Que faz uma promessa de retorno.
+// Identificada por ser uma função assíncrona.
+// O programa espera a sua execução para continuar.
+// Muito comum em funções que realizam consulta em banco de dados.
+async function getClients(skip, take) {
 
-// Abrir conexão com o banco de dados.
-//connection.connect()
+  //const sql = 'SELECT JSON_ARRAYAGG(JSON_OBJECT(id, name, email, disabled)) FROM APP_DEMANDS.client ORDER BY name ASC LIMIT 0, 20;'
+  const sql = `SELECT id, name, email, disabled FROM APP_DEMANDS.client ORDER BY name ASC LIMIT ${skip}, ${take};`
+  //const sql = `SELECT JSON_ARRAYAGG(JSON_OBJECT(id, name, email, disabled)) OVER w items FROM APP_DEMANDS.client WINDOW w AS (ORDER BY name ASC) LIMIT 0, 20;`
 
-export default async function getClients() {
+  // Inclusão do pacote apenas quando a função for chamada.
+  const { createConnection } = require('mysql2/promise')
 
-  //let sql = 'SELECT JSON_ARRAYAGG(JSON_OBJECT(id, name, email, disabled)) FROM APP_DEMANDS.client ORDER BY name ASC LIMIT 0, 20;'
-  let sql = `SELECT id, name, email, disabled FROM APP_DEMANDS.client ORDER BY name ASC LIMIT 0, 2;`
-  //let sql = `SELECT JSON_ARRAYAGG(JSON_OBJECT(id, name, email, disabled)) OVER w items FROM APP_DEMANDS.client WINDOW w AS (ORDER BY name ASC) LIMIT 0, 20;`
+  // Configuração da conexão com o banco de dados.
+  const connection = await createConnection({
+    host:'localhost', 
+    user: 'root', 
+    password : 'root',
+    database : 'APP_DEMANDS'
+  });
 
-  // get the client
-  const mysql = require('mysql2/promise');
-  // create the connection
-  const connection = await mysql.createConnection({host:'localhost', user: 'root', password : 'root', database : 'APP_DEMANDS'});
-  // query database
-
-  // Busca os dados de forma assíncrona.
+  // Busca os dados no banco de forma assíncrona.
   // Parâmetros - Consulta e função que recebe como parâmetro:
   // err    - Falha na busca ou não estabelecer conexão;
   // rows   - Linhas de resposta do banco de dados;
   // fields - Mapeamento dos campos da tabela do banco de dados em consulta.
-  const [rows] = await connection.execute(sql);
+
+  // Retorna um array com objetos Javascript.
+  const [rows] = await connection.execute(sql)
 
   return rows
 }
 
+async function getTotalClients() {
+  const sql = `SELECT COUNT(*) AS "totalItems" FROM APP_DEMANDS.client;`
 
-// Realizar a busca no banco de dados.
-/*async function getClients() {
-  let sql = `SELECT id, name, email, disabled FROM APP_DEMANDS.client ORDER BY name ASC LIMIT 0, 2;`
+  const { createConnection } = require('mysql2/promise')
 
-  // Busca os dados de forma assíncrona.
-  // Parâmetros - Consulta e função que recebe como parâmetro:
-  // err    - Falha na busca ou não estabelecer conexão;
-  // rows   - Linhas de resposta do banco de dados;
-  // fields - Mapeamento dos campos da tabela do banco de dados em consulta.
-  connection.query(sql, (err, rows) => {    
+  const connection = await createConnection({
+    host:'localhost', 
+    user: 'root', 
+    password : 'root',
+    database : 'APP_DEMANDS'
+  });
 
-    // Caso não apresente erro, envia as linhas da tabela
-    if (err) throw err
-      console.log(rows)
-      // response.json({rows}) // Retorna um json com um array "rows".
-      // response.send(rows) // Retorna um Array.
-  })
+  const [rows] = await connection.execute(sql)
 
-  // Fecha conexão com o banco de dados.
-  // connection.end()
+  return rows[0].totalItems
 }
 
-export default getClients*/
+export { getClients, getTotalClients }

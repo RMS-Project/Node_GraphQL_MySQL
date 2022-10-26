@@ -3,7 +3,7 @@ import { gql } from 'apollo-server-express'
 // * - Importa todas as funções.
 import * as uuid from 'uuid'
 
-import getClients from '../../database/Connection'
+import { getClients, getTotalClients } from '../../database/Connection'
 import createRepository from '../../io/Database/createRepository'
 import { ListSortmentEnum  } from '../List/List'
 
@@ -106,65 +106,12 @@ export const resolvers = {
       const {
         take = 10,
         skip = 0,
-        sort,
-        filter
       } = args.options || {} // Ou vai vir um options ou um objeto vazio.
 
-      /* Busca os dados do arquivo. */
-      const clients = await clientRepository.read()
-
-      // Condição que ordena os dados.
-      /*if (sort) {
-        clients.sort((clientA, clientB) => {
-          // Somente pode ser ordenado por name. email ou disable.
-          if (!['name', 'email', 'disabled'].includes(sort.sorter))
-            throw new Error(`Cannot sort by field "${sort.sorter}".`)
-
-          const fieldA = clientA[sort.sorter]
-          const fieldB = clientB[sort.sorter]
-
-          if (typeof fieldA === 'string') {
-            // Efetua a troca de posição dos elementos.
-            if (sort.sortment === ListSortmentEnum.ASC)
-              return fieldA.localeCompare(fieldB)
-            else return fieldB.localeCompare(fieldA)
-          }
-
-          if (sort.sortment === ListSortmentEnum.ASC)
-            return Number(fieldA) - Number(fieldB)
-          else return Number(fieldB) - Number(fieldA)
-        })
-      }*/
-
-      /* Filtro de dados a partir da string fornecida pelo usuário. */
-      /* const filteredClients = clients.filter((client) => {
-        if (!filter || Object.keys(filter).length === 0) return true
-
-        return Object.entries(filter).every(([field, value]) => {
-          if (client[field] === null || client[field] === undefined)
-            return false
-          if (typeof value === 'string') {
-            // % - Qualquer coisa antes ou qualquer coisa depois.
-            if (value.startsWith('%') && value.endsWith('%'))
-              return client[field].includes(value.substr(1, value.length - 2))
-            if (value.startsWith('%'))
-              return client[field].endsWith(value.substr(1))
-            if (value.endsWith('%'))
-              return client[field].startsWith(
-                value.substr(0, value.length - 1)
-              )
-            return client[field] === value
-          }
-          return client[field] === value
-        })
-      })*/
-
+      /* Retorna os dados vindos do banco. */
       return {
-        // slice - Retorna valores entre "skip" e "take".
-        // items: filteredClients.slice(skip, skip + take),
-        items: await getClients(),
-        totalItems: 2
-        //totalItems: filteredClients.length,
+        items: await getClients(skip, take),
+        totalItems: await getTotalClients()
       }
     },
   },
